@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ua">
+<head>
+    <meta charset="UTF-8">
+    <title>Результат прогнозу</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f8fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: white;
+            background-color: #0078D7;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        a:hover {
+            background-color: #005fa3;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    {% if probability %}
+        <h2>Ймовірність отримання займу: {{ probability }}%</h2>
+    {% else %}
+        <h2>Помилка при обчисленні.</h2>
+    {% endif %}
+    <a href="{% url 'index' %}">🔙 Повернутися</a>
+</div>
+</body>
+</html>
