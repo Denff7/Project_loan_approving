@@ -59,7 +59,7 @@ def loan_predict_view(request):
 
     if request.method == 'POST':
         # Path to the local dataset
-        csv_path = r'D:\PyCharm projects\Loan_approved\loan_data.csv'
+        csv_path = r'D:\PyCharm projects\Loan_approved\loan_approval\loan_data.csv'
         users_df = pd.read_csv(csv_path)
 
         # Fill missing values in key columns
