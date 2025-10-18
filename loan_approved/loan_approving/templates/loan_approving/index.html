@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Перевір свій шанс отримати кредит</title>
+    <title>Перевір свій шанс отримати займ</title>
     <style>
         body {
             font-family: "Segoe UI", sans-serif;
@@ -83,10 +83,10 @@
     </style>
 </head>
 <body>
-    <h1>Чи схвалить банк ваш кредит?</h1>
+    <h1>Забудьте про нудні банківські черги та загадкові формули! Наш Магічний Алгоритм Долі готовий передбачити ваш шанс отримання займу!</h1>
     <p>
-        Отримати позику сьогодні - непросто. Банки оцінюють десятки факторів: рівень доходів, історію кредитів, сімейний стан та інше.
-        Введіть свої дані нижче, щоб дізнатися, з якою ймовірністю ваш кредит буде схвалено.
+        Введіть свої дані - від освіти до кредитної історії - і дізнайтеся, чи скажуть вам зірки 'Так' (схвалено) чи 'Ні' (доведеться почекати).
+        Це не кредит, це... фінансовий гороскоп! Прогноз базується на історичних даних, а не на кришталевій кулі:)
     </p>
 
     <form method="post" action="{% url 'loan_predict' %}">
@@ -145,10 +145,10 @@
         });
         </script>
 
-        <label for="LoanAmount">Сума кредиту ($, в тисячах):</label>
+        <label for="LoanAmount">Сума займу ($, в тисячах):</label>
         <input type="number" name="LoanAmount" id="LoanAmount" required>
 
-        <label for="Loan_Amount_Term">Термін кредиту (місяців):</label>
+        <label for="Loan_Amount_Term">Термін займу (місяців):</label>
         <input type="number" name="Loan_Amount_Term" id="Loan_Amount_Term" required>
 
         <label for="Credit_History">Кредитна історія:</label>
@@ -168,7 +168,7 @@
 
         {% if probability %}
         <div class="result">
-            Ймовірність схвалення кредиту: <span style="color:#1d4ed8">{{ probability }}%</span>
+            Ймовірність схвалення займу: <span style="color:#1d4ed8">{{ probability }}%</span>
         </div>
         {% endif %}
     </form>
