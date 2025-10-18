@@ -148,7 +148,7 @@ plt.show()
 plt.figure(figsize=(10, 6))
 sns.boxplot(x='Loan_Status', y='ApplicantIncome', data=users_df)
 plt.title("Applicant Income Distribution by Loan Status")
-plt.xlabel("Loan Status (0 = Denied, 1 = Approved)")
+plt.xlabel("Loan Status (N = Denied, Y = Approved)")
 plt.ylabel("Applicant Income")
 plt.show()
 
