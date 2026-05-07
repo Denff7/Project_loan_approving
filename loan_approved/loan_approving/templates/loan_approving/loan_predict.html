@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ua">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Результат прогнозу</title>
+    <title>Prediction Result</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,11 +43,11 @@
 <body>
 <div class="box">
     {% if probability %}
-        <h2>Ймовірність отримання займу: {{ probability }}%</h2>
+        <h2>Loan Approval Probability: {{ probability }}%</h2>
     {% else %}
-        <h2>Помилка при обчисленні.</h2>
+        <h2>Calculation Error.</h2>
     {% endif %}
-    <a href="{% url 'index' %}">Повернутися</a>
+    <a href="{% url 'index' %}">Go Back</a>
 </div>
 </body>
 </html>

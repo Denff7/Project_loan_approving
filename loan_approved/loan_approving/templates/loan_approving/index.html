@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ua">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Перевір свій шанс отримати займ</title>
+    <title>Check Your Loan Chances</title>
     <style>
         .top-navbar {
             background-color: #212529;
@@ -19,7 +19,7 @@
         .nav-user-area { display: flex; align-items: center; gap: 15px; color: #ffffff; }
 
         .nav-btn {
-            background-color: transparent !important; /* Додали !important для надійності */
+            background-color: transparent !important;
             color: #ffffff !important;
             border: 1px solid #ffffff !important;
             padding: 6px 14px !important;
@@ -29,7 +29,7 @@
             text-decoration: none;
             transition: 0.2s ease-in-out;
             display: inline-block;
-            width: auto !important; /* Щоб кнопка не розтягувалась */
+            width: auto !important;
         }
         .nav-btn:hover {
             background-color: #ffffff !important;
@@ -75,7 +75,7 @@
         <a class="nav-brand" href="{% url 'index' %}">Smart Analyzer</a>
         <div class="nav-user-area">
             <span>Greetings, <strong>{{ user.username }}!</strong></span>
-            <a href="{% url 'history' %}" class="nav-btn">Історія</a>
+            <a href="{% url 'history' %}" class="nav-btn">History</a>
             <form action="{% url 'logout' %}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="nav-btn">Log out</button>
@@ -83,54 +83,54 @@
         </div>
     </nav>
     <div class="content-container">
-        <h1>Забудьте про нудні банківські черги та загадкові формули!</h1>
+        <h1>Forget about boring bank queues and mysterious formulas!</h1>
         <p>
-            Введіть свої дані - від освіти до кредитної історії і дізнайтеся, чи скажуть вам зірки 'Так' (схвалено) чи 'Ні' (доведеться почекати).
+            Enter your details - from education to credit history - and find out if the stars will say 'Yes' (approved) or 'No' (you'll have to wait).
         </p>
         <form method="post" action="{% url 'loan_predict' %}">
             {% csrf_token %}
-            <label for="Married">Сімейний стан:</label>
+            <label for="Married">Marital Status:</label>
             <select name="Married" id="Married">
-                <option value="Yes">Одружений / Одружена</option>
-                <option value="No">Неодружений / Неодружена</option>
+                <option value="Yes">Married</option>
+                <option value="No">Unmarried</option>
             </select>
-            <label for="Dependents">Кількість утриманців:</label>
+            <label for="Dependents">Number of Dependents:</label>
             <select name="Dependents" id="Dependents">
                 <option value="0">0</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3+">3+</option>
             </select>
-            <label for="Education">Освіта:</label>
+            <label for="Education">Education:</label>
             <select name="Education" id="Education">
-                <option value="Graduate">Вища</option>
-                <option value="Not Graduate">Середня</option>
+                <option value="Graduate">Graduate</option>
+                <option value="Not Graduate">Not Graduate</option>
             </select>
-            <label for="Self_Employed">Самозайнятість:</label>
+            <label for="Self_Employed">Self Employed:</label>
             <select name="Self_Employed" id="Self_Employed">
-                <option value="Yes">Так</option>
-                <option value="No">Ні</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
             </select>
-            <label for="ApplicantIncome">Дохід заявника ($):</label>
+            <label for="ApplicantIncome">Applicant Income ($):</label>
             <input type="number" name="ApplicantIncome" id="ApplicantIncome" required>
-            <label for="CoapplicantIncome">Дохід співзаявника ($):</label>
+            <label for="CoapplicantIncome">Coapplicant Income ($):</label>
             <input type="number" name="CoapplicantIncome" id="CoapplicantIncome" required>
-            <label for="LoanAmount">Сума займу ($, в тисячах):</label>
+            <label for="LoanAmount">Loan Amount ($, in thousands):</label>
             <input type="number" name="LoanAmount" id="LoanAmount" required>
-            <label for="Loan_Amount_Term">Термін займу (місяців):</label>
+            <label for="Loan_Amount_Term">Loan Term (months):</label>
             <input type="number" name="Loan_Amount_Term" id="Loan_Amount_Term" required>
-            <label for="Credit_History">Кредитна історія:</label>
+            <label for="Credit_History">Credit History:</label>
             <select name="Credit_History" id="Credit_History">
-                <option value="1.0">Хороша</option>
-                <option value="0.0">Погана</option>
+                <option value="1.0">Good</option>
+                <option value="0.0">Bad</option>
             </select>
-            <label for="Property_Area">Тип місцевості:</label>
+            <label for="Property_Area">Property Area:</label>
             <select name="Property_Area" id="Property_Area">
-                <option value="Urban">Місто</option>
-                <option value="Semiurban">Передмістя</option>
-                <option value="Rural">Село</option>
+                <option value="Urban">Urban</option>
+                <option value="Semiurban">Semiurban</option>
+                <option value="Rural">Rural</option>
             </select>
-            <button type="submit">Розрахувати ймовірність</button>
+            <button type="submit">Calculate Probability</button>
         </form>
     </div>
     <script>
