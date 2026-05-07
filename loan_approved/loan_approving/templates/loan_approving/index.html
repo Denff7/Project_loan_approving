@@ -5,6 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Перевір свій шанс отримати займ</title>
     <style>
+        .top-navbar {
+            background-color: #212529;
+            width: 100%;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-brand { color: #ffffff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-user-area { display: flex; align-items: center; gap: 15px; color: #ffffff; }
+
+        .nav-btn {
+            background-color: transparent !important; /* Додали !important для надійності */
+            color: #ffffff !important;
+            border: 1px solid #ffffff !important;
+            padding: 6px 14px !important;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: 0.2s ease-in-out;
+            display: inline-block;
+            width: auto !important; /* Щоб кнопка не розтягувалась */
+        }
+        .nav-btn:hover {
+            background-color: #ffffff !important;
+            color: #212529 !important;
+        }
+
+        .top-navbar form {
+            background: none;
+            padding: 0;
+            box-shadow: none;
+            width: auto;
+            margin: 0;
+        }
+
         body {
             font-family: "Segoe UI", sans-serif;
             background: linear-gradient(135deg, #e6f0ff, #ffffff);
@@ -14,121 +53,90 @@
             justify-content: flex-start;
             min-height: 100vh;
             margin: 0;
-            padding: 40px 20px;
+            padding-bottom: 40px;
         }
 
-        h1 {
-            font-size: 2.2rem;
-            color: #1e3a8a;
-            text-align: center;
-            margin-bottom: 10px;
-        }
+        .content-container { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+        h1 { font-size: 2.2rem; color: #1e3a8a; text-align: center; margin-bottom: 10px; }
+        p { max-width: 700px; text-align: center; color: #333; line-height: 1.5; margin-bottom: 40px; }
 
-        p {
-            max-width: 700px;
-            text-align: center;
-            color: #333;
-            line-height: 1.5;
-            margin-bottom: 40px;
-        }
+        .content-container form { background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); padding: 30px 40px; max-width: 500px; width: 100%; box-sizing: border-box;}
+        .content-container button[type="submit"] { width: 100%; background-color: #1d4ed8; color: white; border: none; padding: 12px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; transition: 0.3s ease; }
+        .content-container button[type="submit"]:hover { background-color: #2563eb; }
 
-        form {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 30px 40px;
-            max-width: 500px;
-            width: 100%;
-        }
+        label { display: block; font-weight: bold; color: #1e40af; margin-bottom: 6px; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 18px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; box-sizing: border-box;}
 
-        label {
-            display: block;
-            font-weight: bold;
-            color: #1e40af;
-            margin-bottom: 6px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 18px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        button {
-            width: 100%;
-            background-color: #1d4ed8;
-            color: white;
-            border: none;
-            padding: 12px;
-            font-size: 1.1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #2563eb;
-        }
-
-        .result {
-            margin-top: 25px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #0f172a;
-        }
+        .result { margin-top: 25px; text-align: center; font-weight: bold; font-size: 1.2rem; color: #0f172a; }
     </style>
 </head>
 <body>
-    <h1>Забудьте про нудні банківські черги та загадкові формули! Наш Магічний Алгоритм Долі готовий передбачити ваш шанс отримання займу!</h1>
-    <p>
-        Введіть свої дані - від освіти до кредитної історії - і дізнайтеся, чи скажуть вам зірки 'Так' (схвалено) чи 'Ні' (доведеться почекати).
-        Це не кредит, це... фінансовий гороскоп! Прогноз базується на історичних даних, а не на кришталевій кулі:)
-    </p>
-
-    <form method="post" action="{% url 'loan_predict' %}">
-        {% csrf_token %}
-
-        <label for="Married">Сімейний стан:</label>
-        <select name="Married" id="Married">
-            <option value="Yes">Одружений / Одружена</option>
-            <option value="No">Неодружений / Неодружена</option>
-        </select>
-
-        <label for="Dependents">Кількість утриманців:<a title="Утриманець - особа, яка знаходиться на тривалому або постійному матеріальному або грошовому забезпеченні з боку інших осіб, і ця допомога є основним джерелом його існування(діти, батьки тощо).">﹖</a></label>
-        <select name="Dependents" id="Dependents">
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3+">3+</option>
-        </select>
-
-        <label for="Education">Освіта:</label>
-        <select name="Education" id="Education">
-            <option value="Graduate">Вища</option>
-            <option value="Not Graduate">Середня</option>
-        </select>
-
-        <label for="Self_Employed">Самозайнятість:<a title="Самозайнятість - це самостійна трудова діяльність, при якій людина працює на себе без формального працевлаштування, самостійно організовує свою роботу та несе відповідальність за її результати.">﹖</a></label>
-        <select name="Self_Employed" id="Self_Employed">
-            <option value="Yes">Так</option>
-            <option value="No">Ні</option>
-        </select>
-
-        <label for="ApplicantIncome">Дохід заявника ($):</label>
-        <input type="number" name="ApplicantIncome" id="ApplicantIncome" required>
-
-        <label for="CoapplicantIncome">Дохід співзаявника ($):<a title="Дохід чоловіка/дружини заявника.">﹖</a></label>
-        <input type="number" name="CoapplicantIncome" id="CoapplicantIncome" required>
-
-        <script>
+    <nav class="top-navbar">
+        <a class="nav-brand" href="{% url 'index' %}">Smart Analyzer</a>
+        <div class="nav-user-area">
+            <span>Greetings, <strong>{{ user.username }}!</strong></span>
+            <a href="{% url 'history' %}" class="nav-btn">Історія</a>
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="nav-btn">Log out</button>
+            </form>
+        </div>
+    </nav>
+    <div class="content-container">
+        <h1>Забудьте про нудні банківські черги та загадкові формули!</h1>
+        <p>
+            Введіть свої дані - від освіти до кредитної історії і дізнайтеся, чи скажуть вам зірки 'Так' (схвалено) чи 'Ні' (доведеться почекати).
+        </p>
+        <form method="post" action="{% url 'loan_predict' %}">
+            {% csrf_token %}
+            <label for="Married">Сімейний стан:</label>
+            <select name="Married" id="Married">
+                <option value="Yes">Одружений / Одружена</option>
+                <option value="No">Неодружений / Неодружена</option>
+            </select>
+            <label for="Dependents">Кількість утриманців:</label>
+            <select name="Dependents" id="Dependents">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3+">3+</option>
+            </select>
+            <label for="Education">Освіта:</label>
+            <select name="Education" id="Education">
+                <option value="Graduate">Вища</option>
+                <option value="Not Graduate">Середня</option>
+            </select>
+            <label for="Self_Employed">Самозайнятість:</label>
+            <select name="Self_Employed" id="Self_Employed">
+                <option value="Yes">Так</option>
+                <option value="No">Ні</option>
+            </select>
+            <label for="ApplicantIncome">Дохід заявника ($):</label>
+            <input type="number" name="ApplicantIncome" id="ApplicantIncome" required>
+            <label for="CoapplicantIncome">Дохід співзаявника ($):</label>
+            <input type="number" name="CoapplicantIncome" id="CoapplicantIncome" required>
+            <label for="LoanAmount">Сума займу ($, в тисячах):</label>
+            <input type="number" name="LoanAmount" id="LoanAmount" required>
+            <label for="Loan_Amount_Term">Термін займу (місяців):</label>
+            <input type="number" name="Loan_Amount_Term" id="Loan_Amount_Term" required>
+            <label for="Credit_History">Кредитна історія:</label>
+            <select name="Credit_History" id="Credit_History">
+                <option value="1.0">Хороша</option>
+                <option value="0.0">Погана</option>
+            </select>
+            <label for="Property_Area">Тип місцевості:</label>
+            <select name="Property_Area" id="Property_Area">
+                <option value="Urban">Місто</option>
+                <option value="Semiurban">Передмістя</option>
+                <option value="Rural">Село</option>
+            </select>
+            <button type="submit">Розрахувати ймовірність</button>
+        </form>
+    </div>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const marriedSelect = document.getElementById('Married');
             const coapplicantInput = document.getElementById('CoapplicantIncome');
-
             function toggleCoapplicant() {
                 if (marriedSelect.value === 'Yes') {
                     coapplicantInput.disabled = false;
@@ -139,39 +147,9 @@
                     coapplicantInput.value = '';
                 }
             }
-
             marriedSelect.addEventListener('change', toggleCoapplicant);
             toggleCoapplicant();
         });
-        </script>
-
-        <label for="LoanAmount">Сума займу ($, в тисячах):</label>
-        <input type="number" name="LoanAmount" id="LoanAmount" required>
-
-        <label for="Loan_Amount_Term">Термін займу (місяців):</label>
-        <input type="number" name="Loan_Amount_Term" id="Loan_Amount_Term" required>
-
-        <label for="Credit_History">Кредитна історія:</label>
-        <select name="Credit_History" id="Credit_History">
-            <option value="1.0">Хороша</option>
-            <option value="0.0">Погана</option>
-        </select>
-
-        <label for="Property_Area">Тип місцевості:</label>
-        <select name="Property_Area" id="Property_Area">
-            <option value="Urban">Місто</option>
-            <option value="Semiurban">Передмістя</option>
-            <option value="Rural">Село</option>
-        </select>
-
-        <button type="submit">Розрахувати ймовірність</button>
-
-        {% if probability %}
-        <div class="result">
-            Ймовірність схвалення займу: <span style="color:#1d4ed8">{{ probability }}%</span>
-        </div>
-        {% endif %}
-    </form>
-
+    </script>
 </body>
 </html>

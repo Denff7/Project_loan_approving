@@ -1,99 +1,100 @@
-from django.shortcuts import render
 import pandas as pd
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
-
-"""
-Request processing and business logic for the loan approval prediction application.
-
-This module contains two main Django views:
-1. index — displays the homepage.
-2. loan_predict_view — processes form input, trains a machine learning model,
-   and predicts the probability of loan approval.
-"""
+from .models import LoanPrediction
 
 
 def index(request):
     """
-    Render the main homepage of the application.
+        Render the home page based on user authentication status.
 
-    Args:
-        request (HttpRequest): The HTTP request object sent by the client.
+        Args:
+            request (HttpRequest): The incoming HTTP request.
 
-    Returns:
-        HttpResponse: The rendered HTML template for 'loan_approving/index.html'.
+        Returns:
+            HttpResponse: Renders 'loan_approving/index.html' if the user is
+            authenticated, otherwise renders 'loan_approving/landing.html'.
     """
+    if not request.user.is_authenticated:
+        return render(request, "loan_approving/landing.html")
     return render(request, "loan_approving/index.html")
 
 
+def signup_view(request):
+    """
+        Handle user registration.
+
+        Processes the UserCreationForm on POST requests to create a new user account.
+        Upon successful validation, automatically logs the new user in and redirects
+        them to the index page. Renders an empty form on GET requests.
+
+        Args:
+            request (HttpRequest): The incoming HTTP request.
+
+        Returns:
+            HttpResponse: A redirect to the 'index' view on successful registration,
+            or a rendered 'registration/signup.html' template containing the form.
+    """
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('index')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/signup.html', {'form': form})
+
+
+@login_required
 def loan_predict_view(request):
     """
-    Process user-submitted form data, train a Random Forest model using loan_data.csv,
-    and predict the probability of loan approval.
+        Calculate and display the probability of loan approval based on user input.
 
-    Workflow:
-        1. Check if the request method is POST.
-        2. Load a local CSV dataset containing previous loan applications.
-        3. Clean missing values in important columns.
-        4. Define categorical and numerical features.
-        5. Build a preprocessing pipeline:
-           - Encode categorical features (OneHotEncoder).
-           - Scale numerical features (StandardScaler).
-        6. Combine preprocessing with a RandomForestClassifier using a Pipeline.
-        7. Train the model on the dataset.
-        8. Collect user input from the HTML form.
-        9. Create a new DataFrame with this input.
-        10. Use the trained model to predict the probability of loan approval.
-        11. Return the result to the loan_predict.html template.
+        On a POST request, this view loads historical CSV data, trains a Random
+        Forest Classifier with preprocessing (handling missing values, encoding,
+        and scaling), and predicts the approval probability using the submitted form
+        data. Finally, it saves the input parameters and prediction result to the
+        database for the current user.
 
-    Args:
-        request (HttpRequest): The HTTP request containing form data (POST).
+        Args:
+            request (HttpRequest): The incoming HTTP request containing form data.
 
-    Returns:
-        HttpResponse: Rendered HTML page showing the loan approval probability.
+        Returns:
+            HttpResponse: Renders the 'loan_approving/loan_predict.html' template,
+            passing the calculated 'probability' integer to the context.
     """
-
-    probability = None  # Placeholder for the prediction result
-
+    probability = None
     if request.method == 'POST':
-        # Path to the local dataset
         csv_path = r'D:\PyCharm projects\Loan_approved\loan_data.csv'
         users_df = pd.read_csv(csv_path)
-
-        # Fill missing values in key columns
         users_df['Dependents'] = users_df['Dependents'].fillna(users_df['Dependents'].mode()[0])
         users_df['Self_Employed'] = users_df['Self_Employed'].fillna(users_df['Self_Employed'].mode()[0])
         users_df['Loan_Amount_Term'] = users_df['Loan_Amount_Term'].fillna(users_df['Loan_Amount_Term'].median())
         users_df['Credit_History'] = users_df['Credit_History'].fillna(users_df['Credit_History'].median())
-
-        # Define feature categories
         categorical_features = ['Married', 'Dependents', 'Education', 'Self_Employed', 'Property_Area']
         numerical_features = ['ApplicantIncome', 'CoapplicantIncome', 'LoanAmount', 'Loan_Amount_Term',
                               'Credit_History']
 
-        # Split features and target variable
         X = users_df[categorical_features + numerical_features]
         y = users_df['Loan_Status'].map({'Y': 1, 'N': 0})
 
-        # Define preprocessing pipeline
         preprocessor = ColumnTransformer(transformers=[
-            ('cat', OneHotEncoder(), categorical_features),   # Encode categorical variables
-            ('num', StandardScaler(), numerical_features)     # Scale numerical variables
+            ('cat', OneHotEncoder(), categorical_features),
+            ('num', StandardScaler(), numerical_features)
         ])
-
-        # Combine preprocessing and model into a single pipeline
         pipeline = Pipeline([
             ('preprocessor', preprocessor),
             ('classifier', RandomForestClassifier(random_state=42))
         ])
-
-        # Train the model
         pipeline.fit(X, y)
-
-        # Collect user input from the form
-        new_user_df = pd.DataFrame([{
+        raw_data = {
             'Married': request.POST.get('Married'),
             'Dependents': request.POST.get('Dependents'),
             'Education': request.POST.get('Education'),
@@ -104,11 +105,41 @@ def loan_predict_view(request):
             'LoanAmount': float(request.POST.get('LoanAmount', 0)),
             'Loan_Amount_Term': float(request.POST.get('Loan_Amount_Term', 360)),
             'Credit_History': float(request.POST.get('Credit_History', 1))
-        }])
+        }
 
-        # Predict loan approval probability
+        new_user_df = pd.DataFrame([raw_data])
         predicted = pipeline.predict_proba(new_user_df)
-        probability = round(predicted[0][1] * 100, 0)  # Convert to percentage and round
-
-    # Render the prediction result in the template
+        probability = round(predicted[0][1] * 100, 0)
+        LoanPrediction.objects.create(
+            user=request.user,
+            married=raw_data['Married'],
+            dependents=raw_data['Dependents'],
+            education=raw_data['Education'],
+            self_employed=raw_data['Self_Employed'],
+            property_area=raw_data['Property_Area'],
+            applicant_income=raw_data['ApplicantIncome'],
+            coapplicant_income=raw_data['CoapplicantIncome'],
+            loan_amount=raw_data['LoanAmount'],
+            loan_amount_term=raw_data['Loan_Amount_Term'],
+            credit_history=raw_data['Credit_History'],
+            probability=probability
+        )
     return render(request, 'loan_approving/loan_predict.html', {'probability': probability})
+
+@login_required
+def history_view(request):
+    """
+        Display the past loan predictions for the currently logged-in user.
+
+        Retrieves all LoanPrediction records associated with the user making the
+        request and orders them chronologically from newest to oldest.
+
+        Args:
+            request (HttpRequest): The incoming HTTP request.
+
+        Returns:
+            HttpResponse: Renders the 'loan_approving/history.html' template,
+            passing the user's prediction 'history' query list to the context.
+    """
+    user_history = LoanPrediction.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'loan_approving/history.html', {'history': user_history})

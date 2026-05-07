@@ -1,0 +1,16 @@
+# Python and the environment
+__pycache__/
+*.py[cod]
+venv/
+env/
+
+# PyCharm settings
+.idea/
+
+# Database and artifacts
+loan_approved/db.sqlite3
+db.sqlite3
+schema.dot
+
+# Document
+README.md

@@ -15,13 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from loan_approving import views
 
-urlpatterns = [
-    # Connects the root URL ('') to the index() view — displays the main homepage
-    path('', views.index, name='index'),
 
-    # Connects the '/predict/' URL to loan_predict_view() — handles form submission and displays the prediction result
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', views.index, name='index'),
     path('predict/', views.loan_predict_view, name='loan_predict'),
+    path('signup/', views.signup_view, name='signup'),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('history/', views.history_view, name='history'),
 ]
